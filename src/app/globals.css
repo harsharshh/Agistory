@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f9fafb;
+    --foreground: #111827;
+    --muted-foreground: rgba(17, 24, 39, 0.72);
+    --accent: #dc2626;
+    --accent-hover: #b91c1c;
+    --outline: rgba(2, 132, 199, 0.4);
+  }
+
+  :root.dark {
+    --background: #1e293b;
+    --foreground: #f9fafb;
+    --muted-foreground: rgba(249, 250, 251, 0.76);
+    --accent: #f87171;
+    --accent-hover: #fca5a5;
+    --outline: rgba(96, 165, 250, 0.45);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  a {
+    color: inherit;
+  }
+}
