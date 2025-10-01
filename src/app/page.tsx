@@ -77,6 +77,101 @@ export default function Home() {
         }
       );
     }
+    // Theme-aware node glow + pulse (lightweight) + randomized node colors from brand palette
+    if (heroSvgRef.current) {
+      const gsap = getGsap();
+      const prefersReduced =
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const nodes = heroSvgRef.current.querySelectorAll<SVGCircleElement>(".node");
+      if (nodes.length) {
+        // Determine theme
+        const isDark =
+          typeof document !== "undefined" &&
+          document.documentElement.classList.contains("dark");
+        // Brand-aligned palettes for light/dark
+        const palette = isDark
+          ? ["#F87171", "#60A5FA", "#FCD34D", "#A78BFA", "#34D399"]
+          : ["#DC2626", "#0284C7", "#F59E0B", "#8B5CF6", "#10B981"];
+        // Assign random color per node and sync drop-shadow glow
+        nodes.forEach((n, i) => {
+          const color = palette[i % palette.length];
+          n.setAttribute("fill", color);
+          (n as SVGElement).setAttribute(
+            "style",
+            `filter: drop-shadow(0 0 6px ${color});`
+          );
+        });
+        // Animate pulse unless user prefers reduced motion
+        if (!prefersReduced) {
+          gsap.fromTo(
+            nodes,
+            { opacity: 0.65 },
+            {
+              opacity: 1,
+              yoyo: true,
+              repeat: -1,
+              duration: 2.2,
+              ease: "sine.inOut",
+              stagger: 0.2,
+            }
+          );
+        } else {
+          nodes.forEach((n) => ((n as SVGElement).style.opacity = "0.9"));
+        }
+      }
+    }
+    // Orbiting Agile Nodes background animation
+    if (heroSvgRef.current) {
+      const gsap = getGsap();
+      const prefersReduced =
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (!prefersReduced) {
+        const svgOrigin = "200 200"; // center of the 0 0 400 400 viewBox
+
+        gsap.to(".orbit1", {
+          rotation: 360,
+          svgOrigin,
+          transformBox: "fill-box",
+          ease: "none",
+          repeat: -1,
+          duration: 18,
+        });
+        gsap.to(".orbit2", {
+          rotation: -360,
+          svgOrigin,
+          transformBox: "fill-box",
+          ease: "none",
+          repeat: -1,
+          duration: 26,
+        });
+        gsap.to(".orbit3", {
+          rotation: 360,
+          svgOrigin,
+          transformBox: "fill-box",
+          ease: "none",
+          repeat: -1,
+          duration: 34,
+        });
+
+        // Subtle breathing scale for the whole SVG
+        gsap.to(heroSvgRef.current, {
+          scale: 1.015,
+          transformOrigin: "center",
+          yoyo: true,
+          repeat: -1,
+          duration: 6,
+          ease: "sine.inOut",
+        });
+      } else {
+        // Ensure visible if motion reduced
+        heroSvgRef.current.style.opacity = "0.35";
+      }
+    }
   }, []);
 
   return (
@@ -93,27 +188,54 @@ export default function Home() {
             aria-hidden="true"
           >
             {/* Static orbits */}
-            <circle cx="200" cy="200" r="95" stroke="var(--muted-foreground)" strokeOpacity=".25" strokeWidth="1.25" fill="none" />
-            <circle cx="200" cy="200" r="145" stroke="var(--muted-foreground)" strokeOpacity=".22" strokeWidth="1.25" fill="none" />
-            <circle cx="200" cy="200" r="190" stroke="var(--muted-foreground)" strokeOpacity=".18" strokeWidth="1.25" fill="none" />
+            <circle
+              cx="200"
+              cy="200"
+              r="95"
+              stroke="#0284C7"
+              strokeOpacity=".25"
+              strokeWidth="1.25"
+              fill="none"
+              className="dark:stroke-[#60A5FA]"
+            />
+            <circle
+              cx="200"
+              cy="200"
+              r="145"
+              stroke="#DC2626"
+              strokeOpacity=".22"
+              strokeWidth="1.25"
+              fill="none"
+              className="dark:stroke-[#F87171]"
+            />
+            <circle
+              cx="200"
+              cy="200"
+              r="190"
+              stroke="#F59E0B"
+              strokeOpacity=".18"
+              strokeWidth="1.25"
+              fill="none"
+              className="dark:stroke-[#FCD34D]"
+            />
             {/* Orbiting nodes (groups rotate around center) */}
             <g className="orbit1">
-              <circle cx="295" cy="200" r="4" fill="var(--foreground)" />
-              <circle cx="105" cy="200" r="3" fill="var(--foreground)" opacity=".7" />
+              <circle className="node" cx="295" cy="200" r="4" fill="var(--foreground)" style={{ filter: "drop-shadow(0 0 6px var(--foreground))" }} />
+              <circle className="node" cx="105" cy="200" r="3" fill="var(--foreground)" opacity=".7" style={{ filter: "drop-shadow(0 0 5px var(--foreground))" }} />
             </g>
             <g className="orbit2">
-              <circle cx="345" cy="200" r="4" fill="var(--foreground)" />
-              <circle cx="55" cy="200" r="3" fill="var(--foreground)" opacity=".7" />
-              <circle cx="200" cy="345" r="3" fill="var(--foreground)" opacity=".55" />
+              <circle className="node" cx="345" cy="200" r="4" fill="var(--foreground)" style={{ filter: "drop-shadow(0 0 6px var(--foreground))" }} />
+              <circle className="node" cx="55" cy="200" r="3" fill="var(--foreground)" opacity=".7" style={{ filter: "drop-shadow(0 0 5px var(--foreground))" }} />
+              <circle className="node" cx="200" cy="345" r="3" fill="var(--foreground)" opacity=".55" style={{ filter: "drop-shadow(0 0 4px var(--foreground))" }} />
             </g>
             <g className="orbit3">
-              <circle cx="390" cy="200" r="3.5" fill="var(--foreground)" />
-              <circle cx="200" cy="10" r="3" fill="var(--foreground)" opacity=".6" />
-              <circle cx="200" cy="390" r="2.5" fill="var(--foreground)" opacity=".5" />
+              <circle className="node" cx="390" cy="200" r="3.5" fill="var(--foreground)" style={{ filter: "drop-shadow(0 0 5px var(--foreground))" }} />
+              <circle className="node" cx="200" cy="10" r="3" fill="var(--foreground)" opacity=".6" style={{ filter: "drop-shadow(0 0 4px var(--foreground))" }} />
+              <circle className="node" cx="200" cy="390" r="2.5" fill="var(--foreground)" opacity=".5" style={{ filter: "drop-shadow(0 0 3px var(--foreground))" }} />
             </g>
           </svg>
         </div>
-        <div className="max-w-2xl text-center sm:text-left">
+        <div className="max-w-4xl text-center mx-auto">
           <h1
             ref={titleRef}
             className="text-4xl sm:text-6xl font-semibold tracking-tight text-[var(--foreground)]"
@@ -122,11 +244,11 @@ export default function Home() {
           </h1>
           <p
             ref={subRef}
-            className="mt-4 text-base sm:text-lg text-[var(--muted-foreground)]"
+            className="mt-4 text-base sm:text-lg text-[var(--muted-foreground)] max-w-2xl mx-auto"
           >
             Agistory unites planning, sprint execution, and retros into one open platform so every product team ships with clarity and momentum.
           </p>
-          <div ref={ctaRef} className="mt-8 flex flex-col sm:flex-row gap-4">
+          <div ref={ctaRef} className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
               href="#products"
               className="inline-flex items-center justify-center h-12 px-6 rounded-full bg-[#DC2626] text-[#F9FAFB] text-sm font-medium shadow-sm transition-colors hover:bg-[#b91c1c] dark:bg-[#F87171] dark:text-[#1E293B] dark:hover:bg-[#fca5a5]"
