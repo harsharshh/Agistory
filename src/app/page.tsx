@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import { getGsap } from "@/lib/gsap";
 import { AgistoryHeader } from "@/components/AgistoryHeader";
@@ -31,6 +31,24 @@ export default function Home() {
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const heroSvgRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // Disable browser scroll restoration so reloads start at hero
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    // If there's no hash in the URL, jump to top (hero)
+    if (!window.location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+    // Cleanup: restore default behavior when navigating away
+    return () => {
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "auto";
+      }
+    };
+  }, []);
 
   useGSAP(() => {
     const gsap = getGsap();
