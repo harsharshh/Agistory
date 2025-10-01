@@ -221,32 +221,55 @@ export function AgistoryHeader({ logoRefs }: AgistoryHeaderProps) {
               className="absolute left-0 z-30 mt-3 w-72 rounded-2xl border border-[#0284C7]/20 bg-[var(--background)]/95 p-3 shadow-lg backdrop-blur-md transition-colors dark:border-white/10"
             >
               <div className="grid gap-2">
-                {products.map((product) => (
-                  <a
-                    key={product.id}
-                    href={product.id === "storypointz" && product.url ? product.url : `#${product.id}`}
-                    target={product.id === "storypointz" ? "_blank" : undefined}
-                    rel={product.id === "storypointz" ? "noopener noreferrer" : undefined}
-                    className="group flex flex-col gap-1 rounded-xl border border-transparent bg-white/80 p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:bg-slate-800/70"
-                    onClick={() => setProductsOpen(false)}
-                  >
-                    <div className="flex items-center">
-                      <span
-                        className={`bg-gradient-to-r ${product.gradient} bg-clip-text text-base font-semibold text-transparent`}
-                      >
-                        {product.name}
-                      </span>
-                      {product.status === "coming-soon" && (
-                        <span className="ml-2 rounded-full bg-[#fcd34d]/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#b45309] dark:text-[#facc15]">
-                          Coming Soon
+                {products.map((product) => {
+                  const isLive = product.status === "live" && Boolean(product.url);
+
+                  const content = (
+                    <>
+                      <div className="flex items-center">
+                        <span
+                          className={`bg-gradient-to-r ${product.gradient} bg-clip-text text-base font-semibold text-transparent`}
+                        >
+                          {product.name}
                         </span>
-                      )}
+                        {product.status === "coming-soon" && (
+                          <span className="ml-2 rounded-full bg-[#fcd34d]/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#b45309] dark:text-[#facc15]">
+                            Coming Soon
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs text-[var(--muted-foreground)]">
+                        {product.description}
+                      </span>
+                    </>
+                  );
+
+                  if (isLive && product.url) {
+                    return (
+                      <a
+                        key={product.id}
+                        href={product.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setProductsOpen(false)}
+                        className="group flex flex-col gap-1 rounded-xl border border-transparent bg-white/80 p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:bg-slate-800/70"
+                      >
+                        {content}
+                      </a>
+                    );
+                  }
+
+                  return (
+                    <div
+                      key={product.id}
+                      className="group flex flex-col gap-1 rounded-xl border border-transparent bg-white/60 p-4 text-left opacity-90 shadow-sm transition dark:bg-slate-800/60"
+                      aria-disabled="true"
+                      onClick={() => setProductsOpen(false)}
+                    >
+                      {content}
                     </div>
-                    <span className="text-xs text-[var(--muted-foreground)]">
-                      {product.description}
-                    </span>
-                  </a>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : null}

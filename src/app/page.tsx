@@ -30,6 +30,7 @@ export default function Home() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const heroSvgRef = useRef<SVGSVGElement>(null);
 
   useGSAP(() => {
     const gsap = getGsap();
@@ -83,7 +84,35 @@ export default function Home() {
       <div className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/85 backdrop-blur-lg">
         <AgistoryHeader logoRefs={logoRefs} />
       </div>
-      <section className="min-h-screen flex items-center justify-center px-6 sm:px-20 pt-40 pb-16">
+      <section className="relative min-h-screen flex items-center justify-center px-6 sm:px-20 pt-40 pb-16">
+        <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+          <svg
+            ref={heroSvgRef}
+            viewBox="0 0 400 400"
+            className="h-[70vmin] w-[70vmin] opacity-35"
+            aria-hidden="true"
+          >
+            {/* Static orbits */}
+            <circle cx="200" cy="200" r="95" stroke="var(--muted-foreground)" strokeOpacity=".25" strokeWidth="1.25" fill="none" />
+            <circle cx="200" cy="200" r="145" stroke="var(--muted-foreground)" strokeOpacity=".22" strokeWidth="1.25" fill="none" />
+            <circle cx="200" cy="200" r="190" stroke="var(--muted-foreground)" strokeOpacity=".18" strokeWidth="1.25" fill="none" />
+            {/* Orbiting nodes (groups rotate around center) */}
+            <g className="orbit1">
+              <circle cx="295" cy="200" r="4" fill="var(--foreground)" />
+              <circle cx="105" cy="200" r="3" fill="var(--foreground)" opacity=".7" />
+            </g>
+            <g className="orbit2">
+              <circle cx="345" cy="200" r="4" fill="var(--foreground)" />
+              <circle cx="55" cy="200" r="3" fill="var(--foreground)" opacity=".7" />
+              <circle cx="200" cy="345" r="3" fill="var(--foreground)" opacity=".55" />
+            </g>
+            <g className="orbit3">
+              <circle cx="390" cy="200" r="3.5" fill="var(--foreground)" />
+              <circle cx="200" cy="10" r="3" fill="var(--foreground)" opacity=".6" />
+              <circle cx="200" cy="390" r="2.5" fill="var(--foreground)" opacity=".5" />
+            </g>
+          </svg>
+        </div>
         <div className="max-w-2xl text-center sm:text-left">
           <h1
             ref={titleRef}
@@ -132,17 +161,35 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <article
-                key={product.id}
-                id={product.id}
-                className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#0284C7]/15 bg-white/85 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-slate-900/60"
-              >
-                <div
-                  className={`pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${product.gradient} opacity-25 blur-2xl`}
-                />
-                <div className="relative flex flex-1 flex-col">
-                  <span
+            {products.map((product) => {
+              const isLive = product.status === "live" && product.url;
+              return (
+                <article
+                  key={product.id}
+                  id={product.id}
+                  className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#0284C7]/15 bg-white/85 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-slate-900/60"
+                  role={isLive ? "link" : undefined}
+                  tabIndex={isLive ? 0 : undefined}
+                  onClick={() => {
+                    if (isLive && product.url) {
+                      window.open(product.url, "_blank", "noopener,noreferrer");
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    if (!isLive || !product.url) {
+                      return;
+                    }
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      window.open(product.url, "_blank", "noopener,noreferrer");
+                    }
+                  }}
+                >
+                  <div
+                    className={`pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${product.gradient} opacity-25 blur-2xl`}
+                  />
+                  <div className="relative flex flex-1 flex-col">
+                    <span
                     className={`bg-gradient-to-r ${product.gradient} bg-clip-text text-2xl font-semibold text-transparent`}
                   >
                     {product.name}
@@ -161,30 +208,36 @@ export default function Home() {
                     ))}
                   </div>
                   <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
-                    {product.status === "live" && product.url ? (
+                    {isLive && product.url ? (
                       <a
                         href={product.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center rounded-full bg-[#DC2626] px-4 py-2 text-sm font-semibold text-[#F9FAFB] shadow-sm transition-colors hover:bg-[#b91c1c] dark:bg-[#F87171] dark:text-[#1E293B] dark:hover:bg-[#fca5a5]"
+                        onClick={(event) => event.stopPropagation()}
                       >
                         Launch App
                       </a>
                     ) : (
-                      <span className="inline-flex items-center justify-center rounded-full border border-[#0284C7]/30 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#0284C7] dark:border-white/20 dark:text-[#FCD34D]">
+                      <span
+                        className="inline-flex items-center justify-center rounded-full border border-[#0284C7]/30 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#0284C7] opacity-80 dark:border-white/20 dark:text-[#FCD34D]"
+                        aria-disabled="true"
+                      >
                         Coming Soon
                       </span>
-                      )}
-                      <a
-                        href="#contact"
+                    )}
+                    <a
+                      href="#contact"
                       className="text-xs font-semibold text-[#0284C7] underline-offset-4 transition hover:underline dark:text-[#FCD34D]"
+                      onClick={(event) => event.stopPropagation()}
                     >
                       Partner with us
                     </a>
                   </div>
                 </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
