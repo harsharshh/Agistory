@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   :root {
     --background: #f9fafb;
     --foreground: #111827;
@@ -10,6 +14,20 @@
     --accent: #dc2626;
     --accent-hover: #b91c1c;
     --outline: rgba(2, 132, 199, 0.4);
+    --bg-gradient: radial-gradient(circle at 20% 20%, rgba(33, 150, 243, 0.18), transparent 55%),
+      radial-gradient(circle at 80% 0%, rgba(236, 72, 153, 0.16), transparent 55%),
+      linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+    --logo-gradient: linear-gradient(
+      90deg,
+      #1d4ed8 0%,
+      #2563eb 14%,
+      #7c3aed 28%,
+      #c026d3 42%,
+      #dc2626 56%,
+      #ea580c 72%,
+      #f97316 86%,
+      #fbbf24 100%
+    );
   }
 
   :root.dark {
@@ -19,10 +37,27 @@
     --accent: #f87171;
     --accent-hover: #fca5a5;
     --outline: rgba(96, 165, 250, 0.45);
+    --bg-gradient: radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.22), transparent 50%),
+      radial-gradient(circle at 85% 10%, rgba(249, 115, 22, 0.2), transparent 55%),
+      linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    --logo-gradient: linear-gradient(
+      90deg,
+      #60a5fa 0%,
+      #3b82f6 14%,
+      #a855f7 28%,
+      #c084fc 42%,
+      #f87171 56%,
+      #fb923c 72%,
+      #fdba74 86%,
+      #fde68a 100%
+    );
   }
 
   body {
     background-color: var(--background);
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    background-size: cover;
     color: var(--foreground);
   }
 

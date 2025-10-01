@@ -8,31 +8,52 @@ import {
   type MutableRefObject,
 } from "react";
 import { useTheme } from "@/components/ThemeProvider";
+import { products } from "@/data/products";
 
 type AgistoryHeaderProps = {
   logoRefs: MutableRefObject<HTMLSpanElement[]>;
 };
 
-const products = [
+const lettersWithStops = [
   {
-    name: "StoryPointz",
-    description: "AI-guided estimation and planning poker for global teams.",
-    href: "https://story-pointz.vercel.app/",
-    gradient: "from-[#8b5cf6] via-[#60a5fa] to-[#34d399]",
+    char: "A",
+    light: "linear-gradient(90deg, #1D4ED8 0%, #2563EB 100%)",
+    dark: "linear-gradient(90deg, #60A5FA 0%, #3B82F6 100%)",
   },
   {
-    name: "SprintPulse",
-    description: "Predictive sprint health dashboards with risk alerts.",
-    href: "#sprintpulse",
-    gradient: "from-[#f97316] via-[#fb7185] to-[#c084fc]",
-    comingSoon: true,
+    char: "g",
+    light: "linear-gradient(90deg, #2563EB 0%, #7C3AED 100%)",
+    dark: "linear-gradient(90deg, #3B82F6 0%, #A855F7 100%)",
   },
   {
-    name: "RetroScope",
-    description: "Automated retrospectives with action tracking and insights.",
-    href: "#retroscope",
-    gradient: "from-[#38bdf8] via-[#22d3ee] to-[#9333ea]",
-    comingSoon: true,
+    char: "i",
+    light: "linear-gradient(90deg, #7C3AED 0%, #C026D3 100%)",
+    dark: "linear-gradient(90deg, #A855F7 0%, #C084FC 100%)",
+  },
+  {
+    char: "s",
+    light: "linear-gradient(90deg, #C026D3 0%, #DC2626 100%)",
+    dark: "linear-gradient(90deg, #C084FC 0%, #F87171 100%)",
+  },
+  {
+    char: "t",
+    light: "linear-gradient(90deg, #DC2626 0%, #EA580C 100%)",
+    dark: "linear-gradient(90deg, #F87171 0%, #FB923C 100%)",
+  },
+  {
+    char: "o",
+    light: "linear-gradient(90deg, #EA580C 0%, #F97316 100%)",
+    dark: "linear-gradient(90deg, #FB923C 0%, #FDBA74 100%)",
+  },
+  {
+    char: "r",
+    light: "linear-gradient(90deg, #F97316 0%, #F59E0B 100%)",
+    dark: "linear-gradient(90deg, #FDBA74 0%, #FACC15 100%)",
+  },
+  {
+    char: "y",
+    light: "linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%)",
+    dark: "linear-gradient(90deg, #FACC15 0%, #FDE68A 100%)",
   },
 ];
 
@@ -83,40 +104,58 @@ export function AgistoryHeader({ logoRefs }: AgistoryHeaderProps) {
   }, [isProductsOpen]);
 
   useEffect(() => {
-    if (!logoRefs.current.length) return;
-    if (!punchlineRef.current) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      // If user prefers reduced motion, show letters and punchline immediately
-      logoRefs.current.forEach((el) => {
-        el.style.opacity = "1";
-        el.style.transform = "none";
-      });
-      punchlineRef.current.style.opacity = "1";
-      punchlineRef.current.style.transform = "none";
+    if (!logoRefs.current.length || !punchlineRef.current) {
       return;
     }
 
-    logoRefs.current.forEach((el, i) => {
-      el.style.opacity = "0";
-      el.style.transform = "translateX(-12px)";
-      el.animate(
-        [
-          { opacity: 0, transform: "translateX(-12px)" },
-          { opacity: 1, transform: "translateX(0)" },
-        ],
-        {
-          duration: 400,
-          easing: "ease-out",
-          fill: "forwards",
-          delay: i * 80,
-        }
-      );
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const letters = logoRefs.current;
+    const punchline = punchlineRef.current;
+
+    letters.forEach((el, index) => {
+      const letterGradient = lettersWithStops[index];
+      if (letterGradient) {
+        const gradientValue = isDark ? letterGradient.dark : letterGradient.light;
+        el.style.backgroundImage = gradientValue;
+        el.style.backgroundSize = "100% 100%";
+        el.style.backgroundRepeat = "no-repeat";
+        el.classList.add("bg-clip-text", "text-transparent");
+      }
+
+      if (prefersReducedMotion) {
+        el.style.opacity = "1";
+        el.style.transform = "none";
+      } else {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(-12px)";
+        el.animate(
+          [
+            { opacity: 0, transform: "translateX(-12px)" },
+            { opacity: 1, transform: "translateX(0)" },
+          ],
+          {
+            duration: 400,
+            easing: "ease-out",
+            fill: "forwards",
+            delay: index * 80,
+          }
+        );
+      }
     });
 
-    const totalDelay = logoRefs.current.length * 80;
-    punchlineRef.current.style.opacity = "0";
-    punchlineRef.current.style.transform = "translateX(-12px)";
-    punchlineRef.current.animate(
+    if (prefersReducedMotion) {
+      punchline.style.opacity = "1";
+      punchline.style.transform = "none";
+      return;
+    }
+
+    const totalDelay = letters.length * 80;
+    punchline.style.opacity = "0";
+    punchline.style.transform = "translateX(-12px)";
+    punchline.animate(
       [
         { opacity: 0, transform: "translateX(-12px)" },
         { opacity: 1, transform: "translateX(0)" },
@@ -128,23 +167,24 @@ export function AgistoryHeader({ logoRefs }: AgistoryHeaderProps) {
         delay: totalDelay,
       }
     );
-  }, [logoRefs]);
+  }, [logoRefs, isDark]);
 
   return (
     <header className="px-6 sm:px-16 py-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="flex text-2xl sm:text-3xl font-semibold tracking-tight leading-none">
-          {"Agistory".split("").map((letter, index) => (
+          {lettersWithStops.map(({ char, light, dark }, index) => (
             <span
-              key={`${letter}-${index}`}
+              key={`${char}-${index}`}
               ref={(el) => {
                 if (el) {
                   logoRefs.current[index] = el;
                 }
               }}
-              className="inline-block px-[1px] text-[#DC2626] first:text-[#0284C7] last:text-[#F59E0B] dark:text-[#F87171] dark:first:text-[#60A5FA] dark:last:text-[#FCD34D]"
+              suppressHydrationWarning
+              className="inline-block px-[1px] bg-clip-text text-transparent"
             >
-              {letter}
+              {char}
             </span>
           ))}
         </div>
@@ -183,10 +223,10 @@ export function AgistoryHeader({ logoRefs }: AgistoryHeaderProps) {
               <div className="grid gap-2">
                 {products.map((product) => (
                   <a
-                    key={product.name}
-                    href={product.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    key={product.id}
+                    href={product.id === "storypointz" && product.url ? product.url : `#${product.id}`}
+                    target={product.id === "storypointz" ? "_blank" : undefined}
+                    rel={product.id === "storypointz" ? "noopener noreferrer" : undefined}
                     className="group flex flex-col gap-1 rounded-xl border border-transparent bg-white/80 p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:bg-slate-800/70"
                     onClick={() => setProductsOpen(false)}
                   >
@@ -196,8 +236,8 @@ export function AgistoryHeader({ logoRefs }: AgistoryHeaderProps) {
                       >
                         {product.name}
                       </span>
-                      {product.comingSoon && (
-                        <span className="ml-2 rounded-full bg-[#fcd34d]/20 text-[#b45309] text-[10px] font-semibold px-2 py-0.5">
+                      {product.status === "coming-soon" && (
+                        <span className="ml-2 rounded-full bg-[#fcd34d]/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#b45309] dark:text-[#facc15]">
                           Coming Soon
                         </span>
                       )}
@@ -213,29 +253,31 @@ export function AgistoryHeader({ logoRefs }: AgistoryHeaderProps) {
         </div>
         <a
           href="#about"
-          target="_blank"
-          rel="noopener noreferrer"
           className="hover:text-[#DC2626] dark:hover:text-[#FCD34D] transition-colors"
         >
           About
         </a>
         <a
           href="#contact"
-          target="_blank"
-          rel="noopener noreferrer"
           className="hover:text-[#DC2626] dark:hover:text-[#FCD34D] transition-colors"
         >
-          contact
+          Contact
         </a>
       </nav>
       <div className="flex items-center gap-3">
-      <button
-            type="button"
-            onClick={toggleTheme}
-            suppressHydrationWarning
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#0284C7]/30 bg-white/80 text-[#0284C7] shadow-sm transition-colors hover:border-[#0284C7]/60 hover:text-[#DC2626] dark:border-white/20 dark:bg-[#1f2937] dark:text-[#FCD34D] dark:hover:text-[#F59E0B]"
-            aria-label={isReady ? (isDark ? "Switch to light theme" : "Switch to dark theme") : "Toggle theme"}
-          >
+        <button
+          type="button"
+          onClick={toggleTheme}
+          suppressHydrationWarning
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#0284C7]/30 bg-white/80 text-[#0284C7] shadow-sm transition-colors hover:border-[#0284C7]/60 hover:text-[#DC2626] dark:border-white/20 dark:bg-[#1f2937] dark:text-[#FCD34D] dark:hover:text-[#F59E0B]"
+          aria-label={
+            isReady
+              ? isDark
+                ? "Switch to light theme"
+                : "Switch to dark theme"
+              : "Toggle theme"
+          }
+        >
           {isReady ? (
             isDark ? (
               <SunIcon />
@@ -247,12 +289,10 @@ export function AgistoryHeader({ logoRefs }: AgistoryHeaderProps) {
           )}
         </button>
         <a
-          href="#early-access"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="#contact"
           className="hidden sm:inline-flex items-center justify-center h-11 px-5 rounded-full bg-[#DC2626] text-[#F9FAFB] text-sm font-semibold shadow-sm transition-colors hover:bg-[#b91c1c] dark:bg-[#F87171] dark:text-[#1E293B] dark:hover:bg-[#fca5a5]"
         >
-          Explore the Suite
+          Talk to Us
         </a>
       </div>
     </header>
