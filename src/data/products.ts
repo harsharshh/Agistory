@@ -24,7 +24,7 @@ export const products: ProductInfo[] = [
     description: "Automated retrospectives with AI summaries, themes, and action tracking.",
     gradient: "from-[#14b8a6] via-[#f97316] to-[#8b5cf6]",
     status: "live",
-    
+    url: "https://retro-scope.vercel.app/",
     highlights: ["AI retro notes", "Action follow-ups", "Team sentiment"],
   },
   {
