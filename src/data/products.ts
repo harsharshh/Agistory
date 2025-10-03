@@ -28,11 +28,11 @@ export const products: ProductInfo[] = [
     highlights: ["AI retro notes", "Action follow-ups", "Team sentiment"],
   },
   {
-    id: "sprintpulse",
-    name: "SprintPulse",
-    description: "Predictive sprint health dashboards that surface risk before stand-up.",
+    id: "squadpulse",
+    name: "SquadPulse",
+    description: "Team pulse and anonymous whisper wall for real-time sentiment and safe expression.",
     gradient: "from-[#f97316] via-[#fb7185] to-[#c084fc]",
     status: "coming-soon",
-    highlights: ["Forecast burn-down", "Automated blockers", "Mood pulse"],
+    highlights: ["Daily mood check-ins", "Anonymous whisper wall", "CheerUp Mode"],
   },
 ];
