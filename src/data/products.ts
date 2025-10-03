@@ -24,7 +24,7 @@ export const products: ProductInfo[] = [
     description: "Automated retrospectives with AI summaries, themes, and action tracking.",
     gradient: "from-[#14b8a6] via-[#f97316] to-[#8b5cf6]",
     status: "live",
-    url: "https://retro-scope.vercel.app/",
+    
     highlights: ["AI retro notes", "Action follow-ups", "Team sentiment"],
   },
   {
@@ -32,7 +32,8 @@ export const products: ProductInfo[] = [
     name: "SquadPulse",
     description: "Team pulse and anonymous whisper wall for real-time sentiment and safe expression.",
     gradient: "from-[#f97316] via-[#fb7185] to-[#c084fc]",
-    status: "coming-soon",
+    status: "live",
+    url: "https://squad-pulse-m33w.vercel.app/",
     highlights: ["Daily mood check-ins", "Anonymous whisper wall", "CheerUp Mode"],
   },
 ];
