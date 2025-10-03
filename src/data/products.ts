@@ -33,7 +33,7 @@ export const products: ProductInfo[] = [
     description: "Team pulse and anonymous whisper wall for real-time sentiment and safe expression.",
     gradient: "from-[#f97316] via-[#fb7185] to-[#c084fc]",
     status: "live",
-    url: "https://squad-pulse-m33w.vercel.app/",
+    url: "https://squadpulse.vercel.app/",
     highlights: ["Daily mood check-ins", "Anonymous whisper wall", "CheerUp Mode"],
   },
 ];
